@@ -1,7 +1,7 @@
 ---
 name: Habit Tracker
 description: A command-line habit tracker to record and review daily habits, streaks, weekly and monthly goals.
-version: 0.1.1
+version: 0.1.2
 ---
 
 # Habit Tracker Agent Skill

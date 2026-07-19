@@ -1,12 +1,12 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
-LDFLAGS = -lsqlite3
+LDFLAGS = -lpthread -ldl
 
 SRC_DIR = src
 BIN_DIR = bin
 
 TARGET = $(BIN_DIR)/habit
-OBJS = $(SRC_DIR)/habit.o $(SRC_DIR)/db.o
+OBJS = $(SRC_DIR)/habit.o $(SRC_DIR)/db.o $(SRC_DIR)/sqlite3.o
 
 all: $(BIN_DIR) $(TARGET)
 
@@ -16,7 +16,7 @@ $(BIN_DIR):
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-$(SRC_DIR)/%.o: $(SRC_DIR)/%.c $(SRC_DIR)/db.h
+$(SRC_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
