@@ -53,7 +53,15 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (db_init("habits.db") != 0) {
+    char db_path[512];
+    const char *home = getenv("HOME");
+    if (home) {
+        snprintf(db_path, sizeof(db_path), "%s/.habits.db", home);
+    } else {
+        strncpy(db_path, "habits.db", sizeof(db_path));
+    }
+
+    if (db_init(db_path) != 0) {
         return 1;
     }
 

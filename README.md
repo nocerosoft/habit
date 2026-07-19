@@ -20,5 +20,5 @@ If you prefer not to type commands manually, you can install this tool as a skil
 Run this command to download the compiled binary and skill definition into your Hermes agent:
 
 ```bash
-mkdir -p ~/hermes/skills/productivity/habit && curl -L https://github.com/nocerosoft/habit/releases/download/v0.1.0/habit-tracker-skill.zip -o /tmp/habit.zip && unzip -o /tmp/habit.zip -d ~/hermes/skills/productivity/habit && rm /tmp/habit.zip
+curl -sL https://raw.githubusercontent.com/nocerosoft/habit/master/install.sh | bash
 ```

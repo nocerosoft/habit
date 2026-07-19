@@ -23,3 +23,7 @@ This project uses a strict 3-layer architecture. **Do not mix these layers.**
 ## 5. Build System
 - The project is compiled using `make`. Do not introduce complex build systems like CMake unless explicitly requested by the user. 
 - Ensure any new `.c` files are added to the `Makefile` and the GitHub Actions `build.yml` workflow continues to output to `habit-skill/bin`.
+
+## 6. Versioning & Deployment
+- This project uses Semantic Versioning (`MAJOR.MINOR.PATCH`). 
+- **CRITICAL**: Whenever you make a change to the codebase and prepare for a new release, you MUST update the `version:` field at the very top of the `SKILL.md` file to reflect the new version number before pushing the Git tag.

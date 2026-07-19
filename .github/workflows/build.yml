@@ -27,6 +27,7 @@ jobs:
       run: |
         mkdir -p habit-skill/bin
         cp SKILL.md habit-skill/
+        cp install.sh habit-skill/
         cp bin/habit habit-skill/bin/
         
     - name: Upload Agent Skill Artifact
@@ -37,7 +38,7 @@ jobs:
 
     - name: Zip Artifact for Release
       if: startsWith(github.ref, 'refs/tags/v')
-      run: zip -r habit-tracker-skill.zip habit-skill/
+      run: cd habit-skill && zip -r ../habit-tracker-skill.zip .
 
     - name: Publish to GitHub Releases
       uses: softprops/action-gh-release@v2

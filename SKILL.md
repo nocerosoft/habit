@@ -1,77 +1,83 @@
 ---
 name: Habit Tracker
 description: A command-line habit tracker to record and review daily habits, streaks, weekly and monthly goals.
-version: 1.0.0
+version: 0.1.1
 ---
 
 # Habit Tracker Agent Skill
 
 This skill allows you to track and manage user habits using a compiled C CLI application backed by SQLite. 
-The executable is located at `bin/habit` relative to this skill directory.
+The executable is installed globally to the user's system path (`~/.local/bin/habit`). You can run it simply by executing `habit <command>`.
 
-**Important Application Behaviors:**
-- **Auto-Normalization**: The app automatically Title Cases all habit names (e.g., `drink water` becomes `Drink Water`). You do not need to manually normalize strings before passing them to the CLI.
-- **Idempotency**: Recording the same habit multiple times in a single day is completely safe. The app will simply return a message saying it was already recorded today.
+## Important Application Behaviors & State
+- **State File & CWD**: The application state is stored globally in a single SQLite database located at `~/.habits.db`. You do **not** need to change directories (CWD) to run the `habit` command. It will work identically from anywhere.
+- **Auto-Normalization**: The app automatically Title Cases all habit names (e.g., `drink water` becomes `Drink Water`).
+- **Idempotency**: Recording the same habit multiple times in a single day is completely safe. It simply counts as a single daily completion.
+- **Negative Cases**: Attempting to remove a habit that does not exist will still succeed silently.
 
-## Usage Instructions
+---
 
-Whenever the user asks to manage or track their habits, use the following commands:
+## 🚫 Do / Do Not Guidelines
 
-### Record a Habit
-To log a habit for today (or create it if it doesn't exist), run:
-```bash
-./bin/habit record "<activity_name>"
+- **DO** always use the actual stats provided by the CLI.
+- **DO** reformat CLI tables into clean, readable bullet points if you are responding to the user on a mobile interface (like Telegram), as raw tables will wrap and break on small phone screens.
+- **DO** wrap the `heatmap` output in a strict ` ```text ` code block to preserve its grid alignment, or verbally summarize their recent hot/cold streaks instead of pasting the wide grid on mobile.
+- **DO** use the `habit list` command to scan for incomplete weekly/monthly goals before answering questions like "What should I do today?".
+- **DO NOT** fabricate or hallucinate fields (e.g., do not tell the user they spent "30 minutes" on a habit, as the CLI only tracks binary completions).
+- **DO NOT** ask for confirmation after recording a habit, simply report success.
+
+---
+
+## Command Signatures & Expected Outputs
+
+### 1. Record a Habit
+**Command**: `habit record "<activity_name>"`
+**Success Output**:
+```text
+[OK] Recorded 'Swim' for today! (Streak: 1 days)
+
+Keep going! 4 more times to reach your weekly goal.
+
+You have completed 1/4 habits today.
 ```
 
-### List Habits
-To list all tracked habits, current streaks, and progress for weekly/monthly goals, run:
-```bash
-./bin/habit list
+### 2. List Habits
+**Command**: `habit list`
+**Success Output**:
+```text
+Habit                | Streak | Weekly  | Monthly
+------------------------------------------------------
+Swim                 | 1      | 1/5     | 1/0
 ```
 
-### Set a Goal
-To set a specific weekly or monthly goal for a habit, run:
-```bash
-./bin/habit goal "<activity_name>" <target> <weekly|monthly>
-```
-*Example: `./bin/habit goal "Workout" 3 weekly`*
-
-### View Heatmap
-To view a 24-week GitHub-style heatmap of habit completions, run:
-```bash
-./bin/habit heatmap
+### 3. Set a Goal
+**Command**: `habit goal "<activity_name>" <target> <weekly|monthly>`
+**Success Output**:
+```text
+Set weekly goal for 'Swim' to 5.
 ```
 
-### Remove a Habit
-To delete a habit and all its history, run:
-```bash
-./bin/habit remove "<activity_name>"
+### 4. View Heatmap
+**Command**: `habit heatmap`
+**Success Output**: (Returns a 24-week GitHub-style ASCII heatmap with standard ANSI colors)
+
+### 5. Remove a Habit
+**Command**: `habit remove "<activity_name>"`
+**Success Output**:
+```text
+Removed habit 'Swim'.
 ```
 
-## Handling Natural Language Input
-Often, the user will interact with you using natural language rather than explicit commands. You must interpret their intent, extract the core activity, run the corresponding tool, and then report the app's output back to the user.
+---
 
-**Examples:**
+## Natural Language (NL) Mapping Table
 
-1. **User says**: *"i swim today"* or *"i sang today"*
-   - **Your Action**: Extract the core activity ("Swim" or "Sing") and run: `./bin/habit record "Swim"`
-   - **Your Response**: Return the exact CLI output (e.g., *"Recorded 'Swim' for today! You have completed 1/4 habits."*)
+Use this table to translate varied user phrasing into the exact command and flag format.
 
-2. **User says**: *"what ive been done"* or *"what is my progress"*
-   - **Your Action**: Run: `./bin/habit list` (and optionally `./bin/habit heatmap`)
-   - **Your Response**: Summarize the returned table or heatmap for the user.
-
-3. **User says**: *"what to do this week"* or *"what do you think i should do today"*
-   - **Your Action**: Run: `./bin/habit list`
-   - **Your Response**: Identify habits that have not yet met their weekly/monthly goals or that have low completion counts, and recommend them to the user.
-
-4. **User says**: *"i want to run 3 times a week"*
-   - **Your Action**: Run: `./bin/habit goal "Run" 3 weekly`
-   - **Your Response**: Return the confirmation from the CLI tool.
-
-5. **User says**: *"i don't want to track swimming anymore"*
-   - **Your Action**: Run: `./bin/habit remove "Swim"`
-   - **Your Response**: Confirm that the habit has been deleted.
-
-## Data Storage
-The habit data is stored locally in `habits.db` in the current working directory. You do not need to interact with the database directly; the `habit` executable handles all SQLite operations.
+| User Phrasing | Action / Command | Example Execution |
+| --- | --- | --- |
+| "i swim today", "did I swim?", "swim again" | Record the habit | `habit record "Swim"` |
+| "undo swim", "stop tracking running", "delete my swim habit" | Remove the habit | `habit remove "Swim"` |
+| "weekly goal for run?", "i want to run 3 times a week" | Set a goal | `habit goal "Run" 3 weekly` |
+| "what to do this week", "what do you think i should do today", "what is my progress" | List all habits to review progress | `habit list` |
+| "show me my heatmap", "how active was I this year?" | Show the heatmap | `habit heatmap` |
