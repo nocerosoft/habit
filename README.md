@@ -13,11 +13,19 @@ To compile and run the application manually:
 2. Run `make`
 3. Use the CLI: `./bin/habit help`
 
-## Hermes Agent Skill (Optional)
-If you prefer not to type commands manually, you can install this tool as a skill for the Hermes AI agent. This allows you to track habits using natural language.
+## Universal Agent Skills (VS Code Copilot, Claude Code, etc.)
+Because this skill conforms to the [agentskills.io](https://agentskills.io) open standard, you can install it directly into any project workspace for compatible IDEs and agents.
 
-Run this command to download the compiled binary and skill definition into your Hermes agent:
+Run this command inside your project directory to install the CLI tool and add the `SKILL.md` to your local `.agents/skills/habit` folder:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/nocerosoft/habit/master/install.sh | bash
+```
+Your IDE's agent will now automatically discover and use the Habit Tracker CLI to record your habits!
+
+## Hermes Agent Skill (Optional)
+If you are using the Hermes AI agent and want to install the skill globally, run the installer with the `hermes` argument:
+
+```bash
+curl -sL https://raw.githubusercontent.com/nocerosoft/habit/master/install.sh | bash -s -- hermes
 ```
