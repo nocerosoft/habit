@@ -1,0 +1,17 @@
+# Build artifacts
+bin/
+*.o
+
+# SQLite database files
+habits.db
+habits.db-journal
+habits.db-wal
+habits.db-shm
+
+# GitHub Actions local output
+habit-skill/
+
+# IDE/OS files
+.vscode/
+.idea/
+.DS_Store

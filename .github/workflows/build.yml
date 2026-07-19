@@ -1,0 +1,47 @@
+name: Build Agent Skill
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+
+    - name: Build Habit Tracker
+      run: make
+
+    - name: Prepare Agent Skill Directory
+      run: |
+        mkdir -p habit-skill/bin
+        cp SKILL.md habit-skill/
+        cp bin/habit habit-skill/bin/
+        
+    - name: Upload Agent Skill Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: habit-tracker-skill
+        path: habit-skill/
+
+    - name: Zip Artifact for Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: zip -r habit-tracker-skill.zip habit-skill/
+
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        files: habit-tracker-skill.zip
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
